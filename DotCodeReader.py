@@ -22,7 +22,7 @@ class DotCodeReader:
         """Dot description list is a sequence of color followed by TRUE/FALSE indicating the presence of a black dot:
             EXAMPLE:
             ["redTRUE", "darkblueFALSE", "pinkTRUE"]"""
-        final_str=str()
+        finalstr=str()
         for i in dotdescriptionlist:
             finalstr+=i[0]+str(i[1])
         return finalstr
@@ -163,7 +163,7 @@ class DotCodeReader:
         for clusters1 in clusters_i:
             for contourtocheck in clusters1:
                 if not obj_hierarchy[contourtocheck][2] ==-1:
-                    if not cv2.contourArea(contours[obj_hierarchy[contourtocheck][2]])>=5:
+                    if not cv2.contourArea(contours[obj_hierarchy[contourtocheck][2]])>=5: 
                         obj_hierarchy[contourtocheck][2]=-1
         counter=0
         for foundcontour in clusters_i:
@@ -198,10 +198,15 @@ class DotCodeReader:
         print(dot_characteristics)
         try:
             print("Name:", self.translator[self.translate(dot_characteristics)])
-        except:
-            print("Erroneous")
+        except Exception as e:
+            print(e)
 
 
 if __name__=='__main__':
     a=DotCodeReader("/Users/gghosal/Desktop/dotcodestranslated.dat",{'red':0, "lightblue":98, "darkblue":120, "pink":175, "purple":140})
-    print(a.read_image2(pcv.readimage("/Users/gghosal/Desktop/Favorite.png")[0]))
+    FILE="/Users/gghosal/Desktop/gaurav/Plan/PlantCVCroppedTP1/76_2.jpg"
+    print(a.read_image2(ImageProcUtil.threshold_dots(pcv.readimage(FILE)[0])))
+    cv2.imshow("Dotmask",ImageProcUtil.threshold_dots(pcv.readimage(FILE)[0]))
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    
