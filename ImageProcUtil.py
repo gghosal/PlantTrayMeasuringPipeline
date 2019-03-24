@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 def cvtcolor_bgr_rgb(img):
     b,g,r=cv2.split(img)
-    return cv2.merge((r,g,b)
+    return cv2.merge((r,g,b))
 
 def threshold_dots(imgarray):
     img = imgarray
