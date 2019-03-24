@@ -28,7 +28,13 @@ def threshold_dots(imgarray):
     #Dilation 5x5 kernel 
     kernel = np.ones((5,5),np.uint8)
     img=cv2.dilate(img, kernel, iterations=1)
-    img=cvtcolor_bgr_rgb(img)
+    #img=cvtcolor_bgr_rgb(img)
     #plt.imshow(img)
     #plt.show()
+    return img
+
     
+if __name__=='__main__':
+    plt.imshow(threshold_dots(cv2.imread("/Users/gghosal/Desktop/gaurav/Plan/PlantCVCroppedTP1/101_2.jpg"))
+               )
+    plt.show()
