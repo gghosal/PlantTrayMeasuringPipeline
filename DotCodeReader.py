@@ -29,9 +29,9 @@ class DotCodeReader:
         """Translate the picture of the dots into a tray number assignment."""
         ###Preprocessing & Object Finding Steps
         device, img1gray=pcv.rgb2gray(imagearray,0)
-        device, image_binary=pcv.binary_threshold(img1gray, 1, 255, "light", 0)
-        device, id_objects, object_hierarchy=pcv.find_objects(imagearray, img_binary,0)
-        device, roi, roi_hierarchy = pcv.define_roi(imgagearray, shape = "rectangle", device = device, roi_input = "default",  adjust = False,
+        device, img_binary=pcv.binary_threshold(img1gray, 1, 255, "light", 0)
+        device, id_objects, obj_hierarchy=pcv.find_objects(imagearray, img_binary,0)
+        device, roi, roi_hierarchy = pcv.define_roi(imagearray, shape = "rectangle", device = device, roi_input = "default",  adjust = False,
                                            x_adj = 600, y_adj = 600, w_adj = 1200, h_adj = 1200)
         device, roi_objects, roi_obj_hierarchy, kept_mask, obj_area = pcv.roi_objects(imagearray, "partial", roi, roi_hierarchy, id_objects, obj_hierarchy, device)
         device, clusters_i, contours, obj_hierarchy = pcv.cluster_contours(device = device, 
@@ -42,12 +42,12 @@ class DotCodeReader:
                                                                    ncol = int(3))
         out = "/Users/gghosal/Desktop/gaurav/res"
         device, output_path = pcv.cluster_contour_splitimg(device = device, 
-                                                       img = img1, 
+                                                       img = imagearray, 
                                                        grouped_contour_indexes = clusters_i,
                                                        contours = contours,
                                                        hierarchy = obj_hierarchy,
                                                        outdir = out)
-        object_hierarchy=object_hierarchy[0]
+        obj_hierarchy=obj_hierarchy[0]
         centroids=list()
         totalcontours=list()
         #print(len(contours))
@@ -94,13 +94,13 @@ class DotCodeReader:
                 color=min(resultsdict, key=lambda x:resultsdict[x])
                 colors.append(color)
         return colors
-    def check_for_dot(self, contourclusters, obj_hierarchy):
+    def check_for_dot(self, clusters_i, obj_hierarchy):
         """Check for subcontours indicating dot"""
         #new_obj_hierarchy=obj_hierarchy 
         for clusters1 in clusters_i:
             for contourtocheck in clusters1:
                 if not obj_hierarchy[contourtocheck][2] ==-1:
-                    if not cv2.contourArea(contours[obj_hierarchy[contourtocheck][2]])>=5:
+                    if not cv2.contourArea(clusters_i[obj_hierarchy[contourtocheck][2]])>=5:
                         obj_hierarchy[contourtocheck][2]=-1
         dotQ=list()
         for foundcontour in contourcluters:
@@ -111,5 +111,6 @@ class DotCodeReader:
                 dotQ.append(False)
         return dotQ
 
-
-        
+if __name__=='__main__':
+    a=DotCodeReader("/Users/gghosal/Desktop/dotcodestranslated.dat",{'red':0, "lightblue":98, "darkblue":120, "pink":175, "purple":150})
+    print(a.read_image(pcv.readimage("/Users/gghosal/Desktop/Favorite.png")[0]))
