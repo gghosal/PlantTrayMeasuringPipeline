@@ -116,7 +116,7 @@ class DotCodeReader:
         os.chdir('/Users/gghosal/Desktop/gaurav/res/')
         for i in self.listdir_nohidden('/Users/gghosal/Desktop/gaurav/res/'):
             os.remove(i)
-        color_recognition_dict={'red':0, "lightblue":98, "darkblue":120, "pink":175, "purple":140}
+        #color_recognition_dict={'red':0, "lightblue":98, "darkblue":120, "pink":175, "purple":140}
         img1=imageread
         device,img1gray=pcv.rgb2gray(img1,0)
         img1hsv=cv2.cvtColor(img1, cv2.COLOR_BGR2HSV)
@@ -188,9 +188,10 @@ class DotCodeReader:
                         if mask[l][w]==255:
                             color_averagelist.append(img1hsv[l][w][0])
                 color_avg=np.median(color_averagelist)
+                print(color_avg)
                 resultsdict=dict()
-                for color in color_recognition_dict:
-                    resultsdict[color]=abs(color_recognition_dict[color]-color_avg)
+                for color in self.colordefinitions:
+                    resultsdict[color]=abs(self.colordefinitions[color]-color_avg)
                 color=min(resultsdict, key=lambda x:resultsdict[x])
                 colors.append(color)
         for pnr in range(3):
@@ -203,8 +204,8 @@ class DotCodeReader:
 
 
 if __name__=='__main__':
-    a=DotCodeReader("/Users/gghosal/Desktop/dotcodestranslated.dat",{'red':0, "lightblue":98, "darkblue":120, "pink":175, "purple":140})
-    FILE="/Users/gghosal/Desktop/gaurav/Plan/PlantCVCroppedTP1/122_1.jpg"
+    a=DotCodeReader("/Users/gghosal/Desktop/dotcodestranslated.dat",{'red':0, "lightblue":98, "darkblue":120, "pink":173, "purple":160})
+    FILE="/Users/gghosal/Desktop/gaurav/Plan/PlantCVCroppedTP1/11_1.jpg"
     print(a.read_image2(ImageProcUtil.threshold_dots(pcv.readimage(FILE)[0])))
     cv2.imshow("Dotmask",ImageProcUtil.threshold_dots(pcv.readimage(FILE)[0]))
     cv2.waitKey(0)
