@@ -55,7 +55,7 @@ class HalfPotSegmenter:
         
 if __name__=='__main__':
     segmenter=HalfPotSegmenter()
-    pots=segmenter.split_half_trays(cv2.imread("/Users/gghosal/Desktop/gaurav/Plan/PlantCVCroppedTP1/126_1.jpg"))
+    pots=segmenter.split_half_trays(cv2.imread("/Users/gghosal/Desktop/gaurav/Plan/PlantCVCroppedTP1/138_1.jpg"))
     for j in pots:
         plt.imshow(j)
         plt.show()
