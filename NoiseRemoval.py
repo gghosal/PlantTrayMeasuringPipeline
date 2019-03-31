@@ -25,7 +25,7 @@ class NoiseRemoval:
         for i in range(len(contours_sorted)):
             cv2.drawContours(mask, contours_sorted, i, (255),-1)#(random.randint(0,255),random.randint(0,255),random.randint(0,255))
         final=cv2.bitwise_and(imagearraytransformed, imagearraytransformed, mask=mask)
-        cv2.imshow('detected circles',final)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        #cv2.imshow('detected circles',final)
+        #cv2.waitKey(0)
+        #cv2.destroyAllWindows()
         return final
