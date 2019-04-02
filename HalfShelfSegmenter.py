@@ -45,8 +45,8 @@ class HalfTraySegmenter:
         image_grey=cv2.cvtColor(imagearray, cv2.COLOR_BGR2GRAY)
         res = cv2.matchTemplate(image_grey,self.vertical_template,cv2.TM_CCOEFF_NORMED)
         avg_array=np.amax(res,axis=1)
-        peaks=detect_peaks(avg_array,mph=0.5,mpd=self.vertical_distance)
-        peaks=np.array(peaks)+int(self.vertical_template.shape[::-1][0]/2)
+        peaks=detect_peaks(avg_array,mph=0.3,mpd=self.vertical_distance)
+        peaks=np.array(peaks)+int(self.vertical_template.shape[::-1][1]/2)
         peaks=list(peaks)
         peaksfinal=list()
         return peaks
@@ -62,11 +62,11 @@ class HalfTraySegmenter:
         final_split=self.split_along_vertical(imagearray,horizontal_split)
         return final_split
 if __name__=='__main__':
-    segmenter=HalfTraySegmenter('/Users/gghosal/Desktop/ProgramFilesPlantPipeline/Horizontal.jpg','/Users/gghosal/Desktop/ProgramFilesPlantPipeline/Vertical.jpg',1400,500)
-    cv2.imshow("Cropped", ImageProcUtil.crop_out_black('/Users/gghosal/Desktop/gaurav_new_photos/20131105_Shelf4_0600_1_masked_rotated.tif'))
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-    pots=segmenter.split(ImageProcUtil.crop_out_black('/Users/gghosal/Desktop/gaurav_new_photos/20131105_Shelf4_0600_1_masked_rotated.tif'))
+    segmenter=HalfTraySegmenter('/Users/gghosal/Desktop/ProgramFilesPlantPipeline/Vertical.jpg','/Users/gghosal/Desktop/Template.jpg',1400,500)
+    #cv2.imshow("Cropped", ImageProcUtil.crop_out_black('/Users/gghosal/Desktop/gaurav_new_photos/20131105_Shelf4_0600_1_masked_rotated.tif'))
+    #cv2.waitKey(0)
+    #cv2.destroyAllWindows()
+    pots=segmenter.split(ImageProcUtil.crop_out_black('/Users/gghosal/Desktop/gaurav/photos/20131101_Shelf5_1300_2_masked_rotated.tif'))
     for i in pots:
         cv2.imshow("Pot",i)
         cv2.waitKey(0)
