@@ -14,8 +14,24 @@ class NoiseRemoval:
         self.initialized=True
     def sort_contours_by_area(self, contours):
         return sorted(contours, key=lambda x: cv2.contourArea(x), reverse=True)
+    def remove_green(self, imagearray):
+        """Expects a dot thresholded"""
+        hsv=cv2.cvtColor(imagearray, cv2.COLOR_BGR2HSV)
+        green_lower=np.array([20, 0,0])
+        green_upper=np.array([90,255,255])
+        mask=cv2.inRange(hsv, green_lower, green_upper
+                )
+        mask=cv2.bitwise_not(mask)
+        device,mask=pcv.fill(mask,mask,500,0)
+        device,mask=pcv.fill(mask,mask,500,0)
+        res=cv2.bitwise_and(imagearray, imagearray, mask=mask
+                   )
+        return res
     def remove_noise(self, imagearray):
         imagearraytransformed=ImageProcUtil.threshold_dots(imagearray)
+        imagearraytransformed=self.remove_green(imagearraytransformed)
+        #plt.imshow(imagearraytransformed)
+        #plt.show()
         img_gray=cv2.cvtColor(imagearraytransformed, cv2.COLOR_BGR2GRAY)
         ret,thresholded=cv2.threshold(img_gray,1,255,cv2.THRESH_BINARY)
         w1, contours, w2 = cv2.findContours(thresholded, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -25,7 +41,7 @@ class NoiseRemoval:
         for i in range(len(contours_sorted)):
             cv2.drawContours(mask, contours_sorted, i, (255),-1)#(random.randint(0,255),random.randint(0,255),random.randint(0,255))
         final=cv2.bitwise_and(imagearraytransformed, imagearraytransformed, mask=mask)
-        #cv2.imshow('detected circles',final)
-        #cv2.waitKey(0)
-        #cv2.destroyAllWindows()
+        cv2.imshow('detected circles',final)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
         return final
