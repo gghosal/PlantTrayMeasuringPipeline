@@ -6,7 +6,7 @@ import os
 import glob
 import ImageProcUtil
 import pickle
-
+import NoiseRemoval
 class DotCodeReader:
     """Class which includes the functionality of dotcode reader"""
     def __init__(self, referencedotcodesfile, colordefinitions):
@@ -88,8 +88,8 @@ class DotCodeReader:
         os.chdir(out)
         colors=list()
         dot_characteristics=list()
-        for i in listdir_nohidden(out):
-            if  masked(i):
+        for i in self.listdir_nohidden(out):
+            if self.masked(i):
                 mask=cv2.imread(i,0)
                 unmasked=cv2.imread(i[0:-5])
                 width=mask.shape[0]
@@ -205,9 +205,11 @@ class DotCodeReader:
 
 if __name__=='__main__':
     a=DotCodeReader("/Users/gghosal/Desktop/dotcodestranslated.dat",{'red':0, "lightblue":98, "darkblue":120, "pink":173, "purple":160})
-    FILE="/Users/gghosal/Desktop/gaurav/Plan/PlantCVCroppedTP1/11_1.jpg"
-    print(a.read_image2(ImageProcUtil.threshold_dots(pcv.readimage(FILE)[0])))
+    b=NoiseRemoval.NoiseRemoval()
+    FILE="/Users/gghosal/Documents/GitHub/PlantTrayMeasuringPipeline/Figure_1.jpg"
     cv2.imshow("Dotmask",ImageProcUtil.threshold_dots(pcv.readimage(FILE)[0]))
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+    print(a.read_image2(b.remove_noise(ImageProcUtil.threshold_dots(pcv.readimage(FILE)[0]))))
+
     
