@@ -8,7 +8,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import numpy as np
 
-class HalfTraySegmenter:
+class HalfShelfSegmenter:
     """Segments the shelves into individual trays"""
     def __init__(self, trayverticaltemplatefile, trayhorizontaltemplatefile, trayverticaldistance, trayhorizontaldistance):
         """ trayverticaltemplatefile denotes the file containing vertical seperators,
@@ -41,6 +41,17 @@ class HalfTraySegmenter:
         for i in np.split(imagearray, peaks,1):
             subsets.append(i)
         return subsets
+    def check_pots(self, splits):
+        counter=0
+        newsplits=list()
+        for j in splits:
+            if j.shape[0]>=900:
+                #del splits[contour]
+                newsplits.append(j[0:int(j.shape[0]/2)])
+                newsplits.append(j[int(j.shape[0]/2):j.shape[0]])
+            else:
+                newsplits.append(j)
+        return newsplits
     def scan_along_vertical(self, imagearray):
         image_grey=cv2.cvtColor(imagearray, cv2.COLOR_BGR2GRAY)
         res = cv2.matchTemplate(image_grey,self.vertical_template,cv2.TM_CCOEFF_NORMED)
@@ -60,13 +71,15 @@ class HalfTraySegmenter:
     def split(self, imagearray):
         horizontal_split=self.split_on_horizontal(imagearray)
         final_split=self.split_along_vertical(imagearray,horizontal_split)
+        final_split=self.check_pots(final_split)
         return final_split
 if __name__=='__main__':
-    segmenter=HalfTraySegmenter('/Users/gghosal/Desktop/ProgramFilesPlantPipeline/Vertical.jpg','/Users/gghosal/Desktop/Template.jpg',1400,500)
+    segmenter=HalfShelfSegmenter('/Users/gghosal/Desktop/ProgramFilesPlantPipeline/Vertical.jpg','/Users/gghosal/Desktop/Template.jpg',1400,500)
     #cv2.imshow("Cropped", ImageProcUtil.crop_out_black('/Users/gghosal/Desktop/gaurav_new_photos/20131105_Shelf4_0600_1_masked_rotated.tif'))
     #cv2.waitKey(0)
     #cv2.destroyAllWindows()
-    pots=segmenter.split(ImageProcUtil.crop_out_black('/Users/gghosal/Desktop/gaurav/photos/20131101_Shelf5_1300_2_masked_rotated.tif'))
+    print(ImageProcUtil.crop_out_black('/Users/gghosal/Desktop/gaurav_new_photos/20131104_Shelf4_0600_1_masked_rotated.tif').shape)
+    pots=segmenter.split(ImageProcUtil.crop_out_black('/Users/gghosal/Desktop/gaurav_new_photos/20131104_Shelf4_0600_1_masked_rotated.tif'))
     for i in pots:
         cv2.imshow("Pot",i)
         cv2.waitKey(0)
