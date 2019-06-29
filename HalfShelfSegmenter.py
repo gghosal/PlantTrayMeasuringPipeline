@@ -7,7 +7,12 @@ from detect_peaks import detect_peaks
 import numpy as np
 from matplotlib import pyplot as plt
 import numpy as np
-
+import os.path
+import os
+def listdir_nohidden(path):
+    for f in os.listdir(path):
+        if not f.startswith('.'):
+            yield f
 class HalfShelfSegmenter:
     """Segments the shelves into individual trays"""
     def __init__(self, trayverticaltemplatefile, trayhorizontaltemplatefile, trayverticaldistance, trayhorizontaldistance):
@@ -62,7 +67,11 @@ class HalfShelfSegmenter:
         peaksfinal=list()
         return peaks
     def split_along_vertical(self, imagearray,tosplit):
-        peak=self.scan_along_vertical(imagearray)
+        peak=list()
+        #peak=self.scan_along_vertical(imagearray)
+        peak.append(int(imagearray.shape[0]/3))
+        peak.append(2*int(imagearray.shape[0]/3))
+        #peak.append(int(imagearray.shape[0]))
         subsets=list()
         for i in tosplit:
             for j in np.split(i,peak,0):
@@ -74,18 +83,20 @@ class HalfShelfSegmenter:
         final_split=self.check_pots(final_split)
         return final_split
 if __name__=='__main__':
-    segmenter=HalfShelfSegmenter('/Users/gghosal/Desktop/ProgramFilesPlantPipeline/Vertical.jpg','/Users/gghosal/Desktop/Template.jpg',1400,500)
+    segmenter=HalfShelfSegmenter('/Users/gghosal/Desktop/ProgramFilesPlantPipeline/Vertical.jpg','/Users/gghosal/Desktop/Template.jpg',1400,300)
     #cv2.imshow("Cropped", ImageProcUtil.crop_out_black('/Users/gghosal/Desktop/gaurav_new_photos/20131105_Shelf4_0600_1_masked_rotated.tif'))
     #cv2.waitKey(0)
     #cv2.destroyAllWindows()
-    print(ImageProcUtil.crop_out_black('/Users/gghosal/Desktop/gaurav_new_photos/20131104_Shelf4_0600_1_masked_rotated.tif').shape)
-    pots=segmenter.split(ImageProcUtil.crop_out_black('/Users/gghosal/Desktop/gaurav_new_photos/20131104_Shelf4_0600_1_masked_rotated.tif'))
-    for i in pots:
-        cv2.imshow("Pot",i)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-        
-        
+    #print(ImageProcUtil.crop_out_black('/Users/gghosal/Desktop/gaurav/photos/20131101_Shelf6_1300_2_masked_rotated.tif').shape)
+    for i in listdir_nohidden('/Users/gghosal/Desktop/gaurav_new_photos/UndiagonalizedPhotos/'):
+        os.chdir('/Users/gghosal/Desktop/gaurav_new_photos/UndiagonalizedPhotos/')
+        pots=segmenter.split(cv2.imread(i))
+        for t in pots:
+            cv2.imshow(i,t)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+            
+            
             
         
         

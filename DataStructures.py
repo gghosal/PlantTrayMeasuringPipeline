@@ -8,7 +8,7 @@ class Pot:
         self.image=image
         self.measurement=0
     def output_identifier_csv(self):
-        return self.tray_id+","+self.pot_position+","+str(self.measurement)
+        return str(self.tray_id)+","+str(self.pot_position)+","+str(self.measurement)
     def store_measurement(self, measurement):
         self.measurement=measurement
     def get_image(self):
