@@ -24,12 +24,51 @@ class HalfShelfSegmenter:
         self.horizontal_template=cv2.imread(trayhorizontaltemplatefile,0)
         self.vertical_distance=trayverticaldistance
         self.horizontal_distance=trayhorizontaldistance
+    def find_double_horizontal_line(self, image):
+        img_grey=cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        image_template=cv2.imread("/Users/gghosal/Desktop/UCB/Template.tiff")
+        
+        image_template=cv2.cvtColor(image_template, cv2.COLOR_BGR2GRAY)
+        res = cv2.matchTemplate(img_grey,image_template,cv2.TM_CCOEFF_NORMED)
+        avg_array=np.amax(res,axis=1)
+        peak=np.argmax(avg_array)
+        return peak
+    def split_vertical2(self, image,tosplit):
+        peak=self.find_double_horizontal_line(image)
+        peaks=list()
+        pos=str()
+        if (peak<=(image.shape[0]/2)):
+            pos="TOP"
+        else:
+            pos="BOTTOM"
+
+        if pos=="TOP":
+            peaks.append(peak)
+            peaks.append(int((image.shape[0]-peak)/2)+peak)
+            peaks.append(image.shape[0])
+        elif pos=="BOTTOM":
+            peaks.append(int(peak/2))
+            peaks.append(peak)
+            peaks.append(image.shape[0])
+        print(peaks)
+        subsets=list()
+        for i in tosplit:
+            for j in np.split(i,peaks,0):
+                subsets.append(j)
+        return subsets
+        
+        
+        
+            
+        
     def scan_along_horizontal(self, imagearray):
         """Find the locations in order to segment the image into pots along the horizontal axis"""
         image_grey=cv2.cvtColor(imagearray, cv2.COLOR_BGR2GRAY)
+        #plt.imshow(image_grey)
+        #plt.show()
         res = cv2.matchTemplate(image_grey,self.horizontal_template,cv2.TM_CCOEFF_NORMED)
         avg_array=np.amax(res,axis=0)
-        peaks=detect_peaks(avg_array,mph=0.5,mpd=self.horizontal_distance)
+        peaks=detect_peaks(avg_array,mph=0.4,mpd=self.horizontal_distance)
         peaks=np.array(peaks)+int(self.horizontal_template.shape[::-1][0]/2)
         peaks=list(peaks)
         peaksfinal=list()
@@ -54,8 +93,9 @@ class HalfShelfSegmenter:
                 #del splits[contour]
                 newsplits.append(j[0:int(j.shape[0]/2)])
                 newsplits.append(j[int(j.shape[0]/2):j.shape[0]])
-            else:
+            elif j.shape[0]>=300 and j.shape[1]>=300:
                 newsplits.append(j)
+            else: pass
         return newsplits
     def scan_along_vertical(self, imagearray):
         image_grey=cv2.cvtColor(imagearray, cv2.COLOR_BGR2GRAY)
@@ -66,11 +106,23 @@ class HalfShelfSegmenter:
         peaks=list(peaks)
         peaksfinal=list()
         return peaks
+    def scan_along_vertical(self, imagearray):
+        image_grey=cv2.cvtColor(imagearray, cv2.COLOR_BGR2GRAY)
+        res = cv2.matchTemplate(image_grey,self.vertical_template,cv2.TM_CCOEFF_NORMED)
+        avg_array=np.amax(res,axis=1)
+        peaks=detect_peaks(avg_array,mph=0.3,mpd=self.vertical_distance)
+        peaks=np.array(peaks)+int(self.vertical_template.shape[::-1][1]/2)
+        peaks=list(peaks)
+        #peaksfinal=list()
+        #peaks=np.argpartition(avg_array, -3)[-3:]
+        #peaks=list(peaks)
+        #peaks=list(sorted(peaks))
+        return peaks
     def split_along_vertical(self, imagearray,tosplit):
         peak=list()
-        #peak=self.scan_along_vertical(imagearray)
-        peak.append(int(imagearray.shape[0]/3))
-        peak.append(2*int(imagearray.shape[0]/3))
+        peak=self.scan_along_vertical(imagearray)
+        #peak.append(int(imagearray.shape[0]/3))
+        #peak.append(2*int(imagearray.shape[0]/3))
         #peak.append(int(imagearray.shape[0]))
         subsets=list()
         for i in tosplit:
@@ -79,22 +131,24 @@ class HalfShelfSegmenter:
         return subsets
     def split(self, imagearray):
         horizontal_split=self.split_on_horizontal(imagearray)
-        final_split=self.split_along_vertical(imagearray,horizontal_split)
+        final_split=self.split_vertical2(imagearray,horizontal_split)
         final_split=self.check_pots(final_split)
         return final_split
 if __name__=='__main__':
-    segmenter=HalfShelfSegmenter('/Users/gghosal/Desktop/ProgramFilesPlantPipeline/Vertical.jpg','/Users/gghosal/Desktop/Template.jpg',1400,300)
+    segmenter=HalfShelfSegmenter('/Users/gghosal/Desktop/ProgramFilesPlantPipeline/Vertical2.jpg','/Users/gghosal/Desktop/Template.jpg',400,1000)
     #cv2.imshow("Cropped", ImageProcUtil.crop_out_black('/Users/gghosal/Desktop/gaurav_new_photos/20131105_Shelf4_0600_1_masked_rotated.tif'))
     #cv2.waitKey(0)
     #cv2.destroyAllWindows()
     #print(ImageProcUtil.crop_out_black('/Users/gghosal/Desktop/gaurav/photos/20131101_Shelf6_1300_2_masked_rotated.tif').shape)
-    for i in listdir_nohidden('/Users/gghosal/Desktop/gaurav_new_photos/UndiagonalizedPhotos/'):
-        os.chdir('/Users/gghosal/Desktop/gaurav_new_photos/UndiagonalizedPhotos/')
-        pots=segmenter.split(cv2.imread(i))
-        for t in pots:
-            cv2.imshow(i,t)
+    #for i in listdir_nohidden('/Users/gghosal/Desktop/gaurav_new_photos/Shelf62/Untouched'):
+    os.chdir('/Users/gghosal/Desktop/gaurav_new_photos/Shelf62/Untouched')
+    pots=segmenter.split(cv2.imread("20131108_Shelf6_1100_2_masked.tif"))
+    for t in pots:
+        try:
+            cv2.imshow("i",t)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
+        except:pass
             
             
             

@@ -90,12 +90,22 @@ if __name__=='__main__':
 ##    plt.imshow(ImageProcUtil.cvtcolor_bgr_rgb(pot))
 ##    plt.show()
     a=MeasurementSystem("hi")
+##    os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/ProgramFiles/")
+##    trays_list=pickle.load(open("20131029_Shelf6_0900_1_masked.shelf","rb"))
+##    for tray in trays_list:
+##           for pot in tray.get_all_pots():
+##               cv2.imshow("hi",pot.get_image())
+##               cv2.waitKey(0)
+##               cv2.destroyAllWindows()
+##               pot.store_measurement(a.process_pot2(pot.get_image()))
+##               print(pot.output_identifier_csv())
 ##    print(a.process_pot(pot))
+    
 
-
-    for i in listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/ProgramFiles/"):
+    
+    for i in listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/ProgramFiles/Shelf61ShelfFiles"):
         #i="20131026_Shelf3_0600_1_masked.shelf"
-        os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/ProgramFiles/")
+        os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/ProgramFiles/Shelf61ShelfFiles")
         trays_list=pickle.load(open(i, "rb"))
             #print(trays_list)
             
@@ -104,9 +114,9 @@ if __name__=='__main__':
         #pots=segmenter.split_half_trays(r)
         for tray in trays_list:
            for pot in tray.get_all_pots():
-               cv2.imshow("hi",pot.get_image())
-               cv2.waitKey(0)
-               cv2.destroyAllWindows()
+               #cv2.imshow("hi",pot.get_image())
+               #cv2.waitKey(0)
+               #v2.destroyAllWindows()
                pot.store_measurement(a.process_pot2(pot.get_image()))
                print(pot.output_identifier_csv())
         with open(str("/Users/gghosal/Desktop/PlantImagePipeline/Results"+i.split(".")[0]), 'w') as outfile:

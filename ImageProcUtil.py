@@ -48,7 +48,7 @@ def threshold_dots4(imgarray):
 def threshold_dots3(imgarray):
     img = imgarray
     hsv=cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    outrangemask=cv2.inRange(hsv, np.array([8,0,0]),np.array([70,255,255]))
+    outrangemask=cv2.inRange(hsv, np.array([8,0,0]),np.array([90,255,255]))
 
     #outrangemask=cv2.inRange(hsv, np.array([11,255,0]),np.array([80,255,160]))
     inrangemask=cv2.bitwise_not(outrangemask)
@@ -61,10 +61,10 @@ def threshold_dots3(imgarray):
     #img = ndimage.maximum_filter(img, size=100)
     hsv=cv2.bitwise_and(hsv, hsv, mask=inrangemask)
 
-    inrangemask2=cv2.inRange(hsv,np.array([0,0,100]), np.array([255,255,255]))
+    inrangemask2=cv2.inRange(hsv,np.array([0,0,150]), np.array([255,255,255]))
     #inrangemask2 = cv2.bilateralFilter(inrangemask2,9,75,75)
     hsv=cv2.bitwise_and(hsv,hsv, mask=inrangemask2)
-    inrangemask3=cv2.inRange(hsv,np.array([0,70,0]), np.array([255,255,255]))
+    inrangemask3=cv2.inRange(hsv,np.array([0,40,0]), np.array([255,255,255]))
     hsv=cv2.bitwise_and(hsv,hsv,mask=inrangemask3)
     
     img=cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
@@ -89,7 +89,7 @@ def threshold_dots3(imgarray):
 def threshold_dots3_slack(imgarray):
     img = imgarray
     hsv=cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    outrangemask=cv2.inRange(hsv, np.array([12,0,0]),np.array([80,255,255]))
+    outrangemask=cv2.inRange(hsv, np.array([12,0,0]),np.array([90,255,255]))
 
     #outrangemask=cv2.inRange(hsv, np.array([11,255,0]),np.array([80,255,160]))
     inrangemask=cv2.bitwise_not(outrangemask)
@@ -102,10 +102,12 @@ def threshold_dots3_slack(imgarray):
     #img = ndimage.maximum_filter(img, size=100)
     hsv=cv2.bitwise_and(hsv, hsv, mask=inrangemask)
 
-    inrangemask2=cv2.inRange(hsv,np.array([0,0,125]), np.array([255,255,255]))
-    #inrangemask2 = cv2.bilateralFilter(inrangemask2,9,75,75)
+    inrangemask2=cv2.inRange(hsv,np.array([0,0,50]), np.array([255,255,100]))
+    inrangemask2=cv2.bitwise_not(inrangemask2)
+    #inrangemask2 = cv2.bilateralFilter(inraemask2,9,75,75)
     hsv=cv2.bitwise_and(hsv,hsv, mask=inrangemask2)
-    inrangemask3=cv2.inRange(hsv,np.array([0,20,0]), np.array([255,255,255]))
+    inrangemask3=cv2.inRange(hsv,np.array([0,50,0]), np.array([255,255,255]))
+    #inrangemask3=cv2.bitwise_not(inrangemask3)
     hsv=cv2.bitwise_and(hsv,hsv,mask=inrangemask3)
     
     img=cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)

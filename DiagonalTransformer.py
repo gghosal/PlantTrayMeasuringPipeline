@@ -8,7 +8,8 @@ import ImageProcUtil
 from matplotlib import pyplot as plt
 import HalfShelfSegmenter
 import NoiseRemoval
-import sys 
+import sys
+
 sys.path.append("/Users/gghosal/Desktop/")
 from detect_peaks import detect_peaks
 def listdir_nohidden(path):
@@ -51,10 +52,12 @@ class FilePreprocesser:
     def find_double_horizontal_line(self, image):
         img_grey=cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         image_template=cv2.imread("/Users/gghosal/Desktop/UCB/Template.tiff")
+        
         image_template=cv2.cvtColor(image_template, cv2.COLOR_BGR2GRAY)
         res = cv2.matchTemplate(img_grey,image_template,cv2.TM_CCOEFF_NORMED)
         avg_array=np.amax(res,axis=1)
-        peak=detect_peaks(avg_array,mph=0.3,mpd=1400)
+        peak=np.argmax(avg_array)
+        print(peak)
         result=str()
         if (peak<=(img_grey.shape[0]/2)):
             return "TOP"
@@ -73,10 +76,11 @@ class FilePreprocesser:
         res = cv2.matchTemplate(img_grey,image_template,cv2.TM_CCOEFF_NORMED)
         avg_array=np.amax(res,axis=1)
         #print(avg_array[(avg_array.shape[0]-350):(avg_array.shape[0])])
-        index2=np.argmax(avg_array[(avg_array.shape[0]-350):(avg_array.shape[0])])+int(avg_array.shape[0]-350)+int(image_template.shape[0])
+        #index2=np.argmax(avg_array[(avg_array.shape[0]-350):(avg_array.shape[0])])+int(avg_array.shape[0]-350)+int(image_template.shape[0])
+        index2=detect_peaks(avg_array[(avg_array.shape[0]-350):(avg_array.shape[0])],mph=0.1, mpd=20)[-1]+int(avg_array.shape[0]-350)+int(image_template.shape[0])
         
         #print(index2)
-        index1=np.argmax(avg_array[0:350])
+        index1=detect_peaks(avg_array[0:350], mph=0.1,mpd=20)[0]
         index1+=int(image_template.shape[0]/2)
         image=image[index1:index2]
 ##        res2=cv2.matchTemplate(img_grey,image_template,cv2.TM_CCOEFF_NORMED)
@@ -91,13 +95,15 @@ class FilePreprocesser:
         
         
     def determine_dot_code_order(self, image):
+        #plt.imshow(image)
+        #plt.show()
         trays=self.shelf_segmenter.split(image)
         tray=trays[0]
         #plt.imshow(tray)
         #plt.show()
 ##        plt.imshow(tray)
 ##        plt.show()
-        tray,_center=ImageProcUtil.threshold_dots3(tray)
+        tray,_center=ImageProcUtil.threshold_dots3_slack(tray)
         tray=self.noise_removal.remove_noise(tray)
         #tray=self.noise_removal.remove_noise(tray)
         tray_grey=cv2.cvtColor(tray, cv2.COLOR_BGR2GRAY)
@@ -137,23 +143,23 @@ if __name__=='__main__':
 ##    plt.imshow(img_out)
 ##    plt.show()
     for i in listdir_nohidden("/Users/gghosal/Box/r3_orthophotos"):
-        already_processed=[os.path.split(j)[-1].split(".")[0] for j in listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/UndiagonalizedPhotos/")]
-        already_processed2=[os.path.split(j)[-1].split(".")[0] for j in listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/NewUndiagonalizedPhotos/")]
-        if not i.split(".")[0] in already_processed and (not i.split(".")[0] in already_processed2):
-                        
-            print(i)
-        
-            outfile=os.path.split(i)
-            os.chdir("/Users/gghosal/Box/r3_orthophotos")
+        #already_processed=[os.path.split(j)[-1].split(".")[0] for j in listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/UndiagonalizedPhotos/")]
+        #already_processed2=[os.path.split(j)[-1].split(".")[0] for j in listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/NewUndiagonalizedPhotos/")]
+        if (os.path.split(i)[-1].split(".")[0].split("_")[1]=="Shelf5") and (os.path.split(i)[-1].split(".")[0].split("_")[3]=="1"):
             try:
+                print(i)
+            
+                outfile=os.path.split(i)
+                os.chdir("/Users/gghosal/Box/r3_orthophotos")
                 imgout=a.complete_rotation(i)
                 #plt.imshow(imgout)
                 #plt.show()
-                cv2.imwrite(str("/Users/gghosal/Desktop/gaurav_new_photos/NewUndiagonalizedPhotos/"+outfile[1]), imgout)
+                cv2.imwrite(str("/Users/gghosal/Desktop/gaurav_new_photos/Shelf51/"+outfile[1]), imgout)
             except Exception as e:
                 print(e)
                 pass
-        else:print("Done")
+    
+        else:pass#print("Done")
   
 
         

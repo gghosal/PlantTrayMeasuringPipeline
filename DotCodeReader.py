@@ -193,13 +193,17 @@ class DotCodeReader:
             self.centers.append(tuple([ycoords, xcoords]))
             centroids.append(tuple([xcoords, ycoords]))
         count11=0
-        dot_cleaned=apply_brightness_contrast(imageread, brightness=0, contrast=69)
+        #dot_cleaned=imageread
+        dot_cleaned=apply_brightness_contrast(imageread, brightness=0, contrast=49)
+        #cv2.imshow("dot_cleaned", dot_cleaned)
+        #cv2.waitKey(0)
+        #cv2.destroyAllWindows()
         dot_cleaned_grey=cv2.cvtColor(dot_cleaned, cv2.COLOR_RGB2HSV)
-        dot_cleaned_thresh=cv2.inRange(dot_cleaned_grey,np.array([0,0,180]),np.array([255,255,255]))
+        dot_cleaned_thresh=cv2.inRange(dot_cleaned_grey,np.array([0,0,150]),np.array([255,255,255]))
         dot_cleaned=cv2.bitwise_and(dot_cleaned, dot_cleaned, mask=dot_cleaned_thresh)
         dot_kernel = np.ones((7,7),np.uint8)
         
-        #dot_cleaned = cv2.morphologyEx(dot_cleaned, cv2.MORPH_GRADIENT,(5,5))
+        #dot_cleaned = cv2.dilate(dot_cleaned, dot_kernel)
         #cv2.imshow("hi",dot_cleaned)
         #cv2.waitKey(0)
         #cv2.destroyAllWindows()
@@ -229,10 +233,16 @@ class DotCodeReader:
                 width=mask.shape[0]
                 length=mask.shape[1]
                 color_averagelist=list()
-                for w in range(length):
-                    for l in range(width):
-                        if mask[l][w]==255:
-                            color_averagelist.append(img1hsv[l][w][0])
+                masked_img1hsv=cv2.bitwise_and(img1hsv,img1hsv, mask=mask)
+                color_averagelist=cv2.split(masked_img1hsv)[0]
+                color_averagelist=np.reshape(color_averagelist, (color_averagelist.shape[0]*color_averagelist.shape[1],))
+                color_averagelist=color_averagelist[np.flatnonzero(color_averagelist)]
+                
+                #color_avg_list=
+##                for w in range(length):
+##                    for l in range(width):
+##                        if mask[l][w]==255:
+##                            color_averagelist.append(img1hsv[l][w][0])
                 color_avg=statistics.mode(color_averagelist)
                 #print(color_avg)
                 resultsdict=dict()
@@ -245,7 +255,7 @@ class DotCodeReader:
             dot_characteristics.append(tuple((colors[pnr],dotQ[pnr])))
         ##print(dot_characteristics)
         try:
-            print("Name:", self.translator.get(self.translate(dot_characteristics),self.translate(dot_characteristics)))
+            #print("Name:", self.translator.get(self.translate(dot_characteristics),self.translate(dot_characteristics)))
             return self.translator.get(self.translate(dot_characteristics),self.translate(dot_characteristics))
         except Exception as e:
             #print(e)l
