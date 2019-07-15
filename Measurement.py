@@ -1,15 +1,14 @@
 ####MeasurementSystem
-import DataStructures
-import pickle
-import csv
-import cv2
-import ImageProcUtil
-import random
 import os.path
-from plantcv import plantcv as pcv
+import pickle
+
+import cv2
 import numpy as np
-from matplotlib import pyplot as plt
-import HalfPotSegmenter
+from plantcv import plantcv as pcv
+
+import MeasurementSaver
+
+
 def listdir_nohidden(path):
     for f in os.listdir(path):
         if not f.startswith('.'):
@@ -19,6 +18,14 @@ class MeasurementSystem:
     def __init__(self, measurements_to_create):
         """measurements_to_create refers to a list of measurements to create"""
         self.measurements=measurements_to_create
+
+    def breakdown_filename(self, filename: str):
+        split_by_underscore = filename.split("_")
+        date = int(split_by_underscore[0])
+        time = int(split_by_underscore[2])
+        return (date, time)
+
+
     def threshold_green(self, image):
         img_hsv=cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         device=0
@@ -39,7 +46,7 @@ class MeasurementSystem:
         
     def process_pot(self,pot_image):
         device=0
-        debug=None
+        # debug=None
         updated_pot_image=self.threshold_green(pot_image)
         #plt.imshow(updated_pot_image)
         #plt.show()
@@ -100,33 +107,29 @@ if __name__=='__main__':
 ##               pot.store_measurement(a.process_pot2(pot.get_image()))
 ##               print(pot.output_identifier_csv())
 ##    print(a.process_pot(pot))
-    
 
-    
+with MeasurementSaver.MeasurementSaver(
+        database_path='/Users/gghosal/Desktop/gaurav_new_photos/measurements.db') as saver:
+    # saver.create_database('/Users/gghosal/Desktop/gaurav_new_photos/measurements.db')
+
     for i in listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/ProgramFiles/Shelf61ShelfFiles"):
-        #i="20131026_Shelf3_0600_1_masked.shelf"
+        # i="20131026_Shelf3_0600_1_masked.shelf"
         os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/ProgramFiles/Shelf61ShelfFiles")
-        trays_list=pickle.load(open(i, "rb"))
-            #print(trays_list)
-            
-            
-        #segmenter=HalfPotSegmenter.HalfPotSegmenter()
-        #pots=segmenter.split_half_trays(r)
+        filename_no_path = os.path.split(i)[-1]
+        filename_no_extension = filename_no_path.split(".")[0]
+        data = a.breakdown_filename(filename_no_extension)
+
+        trays_list = pickle.load(open(i, "rb"))
+        # print(trays_list)
+
+        # segmenter=HalfPotSegmenter.HalfPotSegmenter()
+        # pots=segmenter.split_half_trays(r)
         for tray in trays_list:
-           for pot in tray.get_all_pots():
-               #cv2.imshow("hi",pot.get_image())
-               #cv2.waitKey(0)
-               #v2.destroyAllWindows()
-               pot.store_measurement(a.process_pot2(pot.get_image()))
-               print(pot.output_identifier_csv())
-        with open(str("/Users/gghosal/Desktop/PlantImagePipeline/Results"+i.split(".")[0]), 'w') as outfile:
-            for tray in trays_list:
-                for pot in tray.get_all_pots():
-                    outfile.write(pot.output_identifier_csv()+"\n")
-
-            
-
-        
-        
-        
-        
+            for pot in tray.get_all_pots():
+                # cv2.imshow("hi",pot.get_image())
+                # cv2.waitKey(0)
+                # v2.destroyAllWindows()
+                pot.store_measurement(a.process_pot2(pot.get_image()))
+                print(pot.output_identifier_csv())
+                saver.save_singular_measurement(int(data[0]), int(data[1]), pot.tray_id, pot.pot_position,
+                                                pot.measurement)

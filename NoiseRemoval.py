@@ -1,13 +1,9 @@
-import matplotlib.pyplot as plt
+import math
+
+import cv2
 import numpy as np
 from plantcv import plantcv as pcv
-import random
-import cv2
-import os
-import glob
-import math
-import ImageProcUtil
-import pickle
+
 
 class NoiseRemoval:
     """Uses dots as a reference in order to accurately split the trays"""
@@ -47,7 +43,7 @@ class NoiseRemoval:
         #plt.imshow(imagearraytransformed)
         #plt.show()
         img_gray=cv2.cvtColor(imagearraytransformed, cv2.COLOR_BGR2GRAY)
-        ret,thresholded=cv2.threshold(img_gray,1,255,cv2.THRESH_BINARY)
+        ret, thresholded = cv2.threshold(img_gray, 1, 255, cv2.THRESH_TRUNC)
         device,thresholded=pcv.fill(thresholded,thresholded,400,0)
         w1, contours, w2 = cv2.findContours(thresholded, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
         realcnt=[]

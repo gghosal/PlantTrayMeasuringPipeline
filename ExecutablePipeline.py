@@ -1,25 +1,23 @@
 #####Executable Pipeline
 
 
-import ImageProcUtil
-import HalfShelfSegmenter
-import NoiseRemoval
-import numpy as np
-from matplotlib import pyplot as plt
-import HalfPotSegmenter
-import DotCodeReader
-import time 
-import NoiseRemoval
-import cv2
-import DataStructures
 import sys
-import warnings
+import time
+
+import cv2
+
+import DataStructures
+import DotCodeReader
 import ErrorHandler
+import HalfPotSegmenter
+import HalfShelfSegmenter
+import ImageProcUtil
+import NoiseRemoval
+
 global TRAY_SECTION
 import pickle
-from plantcv import plantcv as pcv
 import os
-from skimage.filters import threshold_otsu, threshold_adaptive,threshold_local
+
 global DEBUG
 DEBUG=False
 class NullDev:
@@ -400,15 +398,16 @@ class ExecutablePipeline:
 if __name__=='__main__':
     t=time.time()
     a=ExecutablePipeline()
-    for i in list(listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/Shelf51")):
+    for i in list(listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/Shelf3_1")):
         print(i)
-        os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/Shelf51")
+        os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/Shelf3_1")
         #print(i)
         if int(i.split("_")[3])==1:
             trays=a.process_tray(i,[2,1,2])
         else:
             trays=a.process_tray(i, [1,2,1])
-        out_file=open(str("/Users/gghosal/Desktop/gaurav_new_photos/ProgramFiles/"+i.split(".")[0]+".shelf"), "wb")
+        out_file = open(str("/Users/gghosal/Desktop/gaurav_new_photos/ShelfFiles31/" + i.split(".")[0] + ".shelf"),
+                        "wb")
         pickle.dump(trays, out_file)
         out_file.close()
         #print(time.time()-t)

@@ -1,19 +1,13 @@
-import ImageProcUtil
-import HalfShelfSegmenter
-import NoiseRemoval
-import numpy as np
-from matplotlib import pyplot as plt
-import HalfPotSegmenter
-import DotCodeReader
-import NoiseRemoval
 import cv2
-import math
-import DataStructures
+
+import HalfShelfSegmenter
+import ImageProcUtil
+import NoiseRemoval
+
 global TRAY_SECTION
-import pickle
-from plantcv import plantcv as pcv
 import os
-from skimage.filters import threshold_otsu, threshold_adaptive,threshold_local
+
+
 def apply_brightness_contrast(input_img, brightness = -12, contrast = 0):
 
     if brightness != 0:
@@ -48,10 +42,11 @@ def aspect_ratio(cnt):
     
 noise_removal=NoiseRemoval.NoiseRemoval()
 shelf_segmenter=HalfShelfSegmenter.HalfShelfSegmenter('/Users/gghosal/Desktop/ProgramFilesPlantPipeline/Vertical2.jpg','/Users/gghosal/Desktop/Template.jpg',1400,900)
-for i in list(listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/Shelf62")):
-    os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/Shelf62")
-    
-    for j in shelf_segmenter.split(apply_brightness_contrast(cv2.imread("20131117_Shelf6_0600_2_masked.tif"),brightness=0, contrast=0)):
+for i in list(listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/Shelf3_1")):
+    os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/Shelf3_1")
+
+    for j in shelf_segmenter.split(
+            apply_brightness_contrast(cv2.imread('20131105_Shelf3_0600_1_masked.tif'), brightness=0, contrast=0)):
         try:
             #cleaned,_=ImageProcUtil.threshold_dots3(j)
             #cleaned=noise_removal.remove_noise(cleaned)
