@@ -88,9 +88,12 @@ class ExecutablePipeline:
                 #plt.imshow(i)
                 #plt.show()
                 cleaned,centers_adjustment=ImageProcUtil.threshold_dots3_slack(i)
-                cleaned=self.noise_removal.remove_noise(cleaned)
+                cleaned = self.noise_removal.remove_noise2(cleaned)
+                # cv2.imshow("hi",cleaned)
+                # cv2.waitKey(0)
+                # cv2.destroyAllWindows()
             except Exception as e:
-                #print("clean error")
+                print(e)
                 #print(e)
                 continue
 
@@ -222,8 +225,10 @@ class ExecutablePipeline:
                     #cv2.waitKey(0)
                     #cv2.destroyAllWindows()
                     #print('error')
-                    record=ErrorHandler.ErroneousImage(i, "unrecognized_dot_code",tray_id,tray_img_path.split(".")[0]+".shelf",centers_adjusted,section_types[tray_counter%3])
-                    error_file_obj=open(str("/Users/gghosal/Desktop/gaurav_new_photos/Errors/"+tray_img_path.split(".")[0]+str(errors)), "wb")
+                    record=ErrorHandler.ErroneousImage(i, "unrecognized_dot_code", tray_id, tray_img_path.split(".")[0] +".shelf", centers_adjusted, section_types[tray_counter % 3])
+                    error_file_obj = open(str(
+                        "/Users/gghosal/Desktop/gaurav_new_photos/Errors61/" + tray_img_path.split(".")[0] + str(
+                            errors)), "wb")
                     pickle.dump(record, error_file_obj)
                     error_file_obj.close()
                     
@@ -275,7 +280,7 @@ class ExecutablePipeline:
                 tray_counter+=1
             except IndexError as e:
                 try:
-                    print("inner except first")
+                    #print("inner except first")
                     print(e)
                     cleaned,centers_adjustment=ImageProcUtil.threshold_dots3_slack(i)
                     cleaned=self.noise_removal.remove_noise(cleaned)
@@ -297,8 +302,10 @@ class ExecutablePipeline:
                         #cv2.waitKey(0)
                         #cv2.destroyAllWindows()
                         errors+=1
-                        record=ErrorHandler.ErroneousImage(i, "unrecognized_dot_code",tray_id,tray_img_path.split(".")[0]+".shelf",centers_adjusted,section_types[tray_counter%3])
-                        error_file_obj=open(str("/Users/gghosal/Desktop/gaurav_new_photos/Errors/"+tray_img_path.split(".")[0]+str(errors)), "wb")
+                        record=ErrorHandler.ErroneousImage(i, "unrecognized_dot_code", tray_id, tray_img_path.split(".")[0] +".shelf", centers_adjusted, section_types[tray_counter % 3])
+                        error_file_obj = open(str(
+                            "/Users/gghosal/Desktop/gaurav_new_photos/Errors61/" + tray_img_path.split(".")[0] + str(
+                                errors)), "wb")
                         pickle.dump(record, error_file_obj)
                         error_file_obj.close()
                         
@@ -358,8 +365,10 @@ class ExecutablePipeline:
                     #cv2.waitKey(0)
                     #cv2.destroyAllWindows()
                     #print("error")
-                    record=ErrorHandler.ErroneousImage(i, "misc.error",None,tray_img_path.split(".")[0]+".shelf",None,section_types[tray_counter%3])
-                    error_file_obj=open(str("/Users/gghosal/Desktop/gaurav_new_photos/Errors/"+tray_img_path.split(".")[0]+str(errors)), "wb")
+                    record=ErrorHandler.ErroneousImage(i, "misc.error", None, tray_img_path.split(".")[0] +".shelf", None, section_types[tray_counter % 3])
+                    error_file_obj = open(str(
+                        "/Users/gghosal/Desktop/gaurav_new_photos/Errors61/" + tray_img_path.split(".")[0] + str(
+                            errors)), "wb")
                     pickle.dump(record, error_file_obj)
                     error_file_obj.close()
                     print('misc except 1')
@@ -379,8 +388,10 @@ class ExecutablePipeline:
                 #cv2.imshow("hi",cleaned)
                 #cv2.waitKey(0)
                 #cv2.destroyAllWindows()
-                record=ErrorHandler.ErroneousImage(i, "misc.error",None,tray_img_path.split(".")[0]+".shelf",None,section_types[tray_counter%3])
-                error_file_obj=open(str("/Users/gghosal/Desktop/gaurav_new_photos/Errors/"+tray_img_path.split(".")[0]+str(errors)), "wb")
+                record=ErrorHandler.ErroneousImage(i, "misc.error", None, tray_img_path.split(".")[0] +".shelf", None, section_types[tray_counter % 3])
+                error_file_obj = open(str(
+                    "/Users/gghosal/Desktop/gaurav_new_photos/Errors61/" + tray_img_path.split(".")[0] + str(errors)),
+                                      "wb")
                 pickle.dump(record, error_file_obj)
                 error_file_obj.close()
         print("error",errors)
@@ -398,19 +409,19 @@ class ExecutablePipeline:
 if __name__=='__main__':
     t=time.time()
     a=ExecutablePipeline()
-    for i in list(listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/Shelf3_1")):
+    for i in list(listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/Shelf61")):
         print(i)
-        os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/Shelf3_1")
-        #print(i)
-        if int(i.split("_")[3])==1:
-            trays=a.process_tray(i,[2,1,2])
+        os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/Shelf61")
+        # print(i)
+        if int(i.split("_")[3]) == 1:
+            trays = a.process_tray(i, [2, 1, 2])
         else:
-            trays=a.process_tray(i, [1,2,1])
-        out_file = open(str("/Users/gghosal/Desktop/gaurav_new_photos/ShelfFiles31/" + i.split(".")[0] + ".shelf"),
+            trays = a.process_tray(i, [1, 2, 1])
+        out_file = open(str("/Users/gghosal/Desktop/gaurav_new_photos/ShelfFiles61/" + i.split(".")[0] + ".shelf"),
                         "wb")
         pickle.dump(trays, out_file)
         out_file.close()
         #print(time.time()-t)
-##    os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/Shelf")
-##    trays=a.process_tray("20131104_Shelf3_1900_1_masked.tif",[2,1,2])
+    # os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/Shelf3_1")
+    #trays=a.process_tray("20131108_Shelf3_0600_1_masked.tif",[2,1,2])
 #20131027_Shelf3_1200_1_masked.tif

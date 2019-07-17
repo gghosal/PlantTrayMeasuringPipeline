@@ -1,9 +1,12 @@
 import cv2
-from scipy import ndimage
+import matplotlib.pyplot as plt
 import numpy as np
 from plantcv import plantcv as pcv
-import matplotlib.pyplot as plt
+from scipy import ndimage
+
 import NoiseRemoval
+
+
 def cvtcolor_bgr_rgb(img):
     b,g,r=cv2.split(img)
     return cv2.merge((r,g,b))
@@ -96,17 +99,17 @@ def threshold_dots3_slack(imgarray):
     #hsv1=cv2.bitwise_and(hsv,hsv, mask=inrangemask)
     #inrangemask = cv2.bilateralFilter(inrangemask,9,75,75)
     #inrangemask=ndimage.filters.minimum_filter(inrangemask, (2,2))
-    
-    #dev,inrangemask=pcv.fill(inrangemask, inrangemask, 700,0)
+
+    # dev,inrangemask=pcv.fill(inrangemask, inrangemask, 500,0)
     
     #img = ndimage.maximum_filter(img, size=100)
     hsv=cv2.bitwise_and(hsv, hsv, mask=inrangemask)
 
-    inrangemask2=cv2.inRange(hsv,np.array([0,0,50]), np.array([255,255,100]))
+    inrangemask2 = cv2.inRange(hsv, np.array([0, 0, 30]), np.array([255, 255, 100]))
     inrangemask2=cv2.bitwise_not(inrangemask2)
     #inrangemask2 = cv2.bilateralFilter(inraemask2,9,75,75)
     hsv=cv2.bitwise_and(hsv,hsv, mask=inrangemask2)
-    inrangemask3=cv2.inRange(hsv,np.array([0,50,0]), np.array([255,255,255]))
+    inrangemask3 = cv2.inRange(hsv, np.array([0, 60, 0]), np.array([255, 255, 255]))
     #inrangemask3=cv2.bitwise_not(inrangemask3)
     hsv=cv2.bitwise_and(hsv,hsv,mask=inrangemask3)
     

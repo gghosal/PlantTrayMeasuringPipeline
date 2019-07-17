@@ -1,14 +1,15 @@
 #TraysPre_Processing
 ##Example: 20131103_Shelf4_0600_1_masked_rotated.tif
-import cv2
+import os
 import os.path
-import os 
-import numpy as np
-import ImageProcUtil
-from matplotlib import pyplot as plt
-import HalfShelfSegmenter
-import NoiseRemoval
 import sys
+
+import cv2
+import numpy as np
+
+import HalfShelfSegmenter
+import ImageProcUtil
+import NoiseRemoval
 
 sys.path.append("/Users/gghosal/Desktop/")
 from detect_peaks import detect_peaks
@@ -145,7 +146,8 @@ if __name__=='__main__':
     for i in listdir_nohidden("/Users/gghosal/Box/r3_orthophotos"):
         #already_processed=[os.path.split(j)[-1].split(".")[0] for j in listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/UndiagonalizedPhotos/")]
         #already_processed2=[os.path.split(j)[-1].split(".")[0] for j in listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/NewUndiagonalizedPhotos/")]
-        if (os.path.split(i)[-1].split(".")[0].split("_")[1]=="Shelf5") and (os.path.split(i)[-1].split(".")[0].split("_")[3]=="1"):
+        if (os.path.split(i)[-1].split(".")[0].split("_")[1] == "Shelf6") and (
+                os.path.split(i)[-1].split(".")[0].split("_")[3] == "2"):
             try:
                 print(i)
             
@@ -154,7 +156,7 @@ if __name__=='__main__':
                 imgout=a.complete_rotation(i)
                 #plt.imshow(imgout)
                 #plt.show()
-                cv2.imwrite(str("/Users/gghosal/Desktop/gaurav_new_photos/Shelf51/"+outfile[1]), imgout)
+                cv2.imwrite(str("/Users/gghosal/Desktop/gaurav_new_photos/Shelf62/" + outfile[1]), imgout)
             except Exception as e:
                 print(e)
                 pass
@@ -166,21 +168,3 @@ if __name__=='__main__':
         
     #with_line=cv2.line(img,(0,peak), (img.shape[1], peak), (255,0,0),20)
     #print(a.determine_dot_code_order(img))
-    
-
-        
-        
-        
-        
-        
-                        
-        
-        
-        
-                                
-        
-        
-        
-        
-        
-                                        

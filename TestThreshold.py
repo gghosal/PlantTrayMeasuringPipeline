@@ -46,7 +46,7 @@ for i in list(listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/Shelf3_
     os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/Shelf3_1")
 
     for j in shelf_segmenter.split(
-            apply_brightness_contrast(cv2.imread('20131105_Shelf3_0600_1_masked.tif'), brightness=0, contrast=0)):
+            apply_brightness_contrast(cv2.imread('20131104_Shelf3_1900_1_masked.tif'), brightness=0, contrast=0)):
         try:
             #cleaned,_=ImageProcUtil.threshold_dots3(j)
             #cleaned=noise_removal.remove_noise(cleaned)
@@ -81,7 +81,5 @@ for i in list(listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/Shelf3_
             cv2.imshow("hi", cleaned2)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
-        except:continue
-
-
-
+        except Exception as e:
+            print(e)
