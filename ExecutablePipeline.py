@@ -1,6 +1,7 @@
 #####Executable Pipeline
 
 
+import statistics
 import sys
 import time
 
@@ -70,9 +71,11 @@ class ExecutablePipeline:
         #plt.show()
         tray_counter=0
         tray_struct=list()
+        all_errors = list()
         trays=self.shelf_segmenter.split(cv2.imread(tray_img_path))
         errors=0
         for i in trays:
+
             #plt.imshow(i)
             #plt.show()
             try:
@@ -93,8 +96,12 @@ class ExecutablePipeline:
                 # cv2.waitKey(0)
                 # cv2.destroyAllWindows()
             except Exception as e:
+                # cv2.imshow('hi',i)
+                # cv2.waitKey(0)
+                # cv2.destroyAllWindows()
+                tray_counter += 1
+                #print("errors",e)
                 print(e)
-                #print(e)
                 continue
 
             #cleaned=apply_brightness_contrast(cleaned, brightness=0, contrast=69)
@@ -203,7 +210,11 @@ class ExecutablePipeline:
                 #plt.show()
             try:
                 tray_id=self.dotcodereader.read_image2(cleaned)
-                print(tray_id)
+                # print(str("/Users/gghosal/Desktop/gaurav_new_photos/debug"+tray_img_path.split(".")[0].split("_")[0]+tray_img_path.split(".")[0].split("_")[2]+".jpg"))
+                cv2.imwrite(str("/Users/gghosal/Desktop/gaurav_new_photos/debug/" + str(tray_id) + "_" + str(
+                    section_types[tray_counter % 3]) + tray_img_path.split(".")[0].split("_")[0] +
+                                tray_img_path.split(".")[0].split("_")[2] + ".jpg"), i)
+                print(tray_id, section_types[tray_counter % 3])
                 if DEBUG:
                     
                     
@@ -225,16 +236,17 @@ class ExecutablePipeline:
                     #cv2.waitKey(0)
                     #cv2.destroyAllWindows()
                     #print('error')
+
                     record=ErrorHandler.ErroneousImage(i, "unrecognized_dot_code", tray_id, tray_img_path.split(".")[0] +".shelf", centers_adjusted, section_types[tray_counter % 3])
-                    error_file_obj = open(str(
-                        "/Users/gghosal/Desktop/gaurav_new_photos/Errors61/" + tray_img_path.split(".")[0] + str(
-                            errors)), "wb")
-                    pickle.dump(record, error_file_obj)
-                    error_file_obj.close()
+                    all_errors.append(record)
+
+                    # error_file_obj = open(str(
+                    #    "/Users/gghosal/Desktop/gaurav_new_photos/Errors62/" + tray_img_path.split(".")[0] + str(
+                    #        errors)), "wb")
+                    # pickle.dump(record, error_file_obj)
+                    #error_file_obj.close()
                     
-                    
-                    
-                    
+
                 #cv2.imshow('detected circles',cleaned)
                 #cents=self.dotcodereader.get_centers()
                 pots=self.potsegmenter.split_half_trays_with_centers(i,centers_adjusted)
@@ -279,123 +291,44 @@ class ExecutablePipeline:
                 #plt.show()
                 tray_counter+=1
             except IndexError as e:
-                try:
-                    #print("inner except first")
-                    print(e)
-                    cleaned,centers_adjustment=ImageProcUtil.threshold_dots3_slack(i)
-                    cleaned=self.noise_removal.remove_noise(cleaned)
-                    cleaned=ImageProcUtil.cvtcolor_bgr_rgb(cleaned)
-                    if DEBUG:
-                        cv2.imshow("hi",cleaned)
-                        cv2.waitKey(0)
-                        cv2.destroyAllWindows()
-        
-                    
-                    tray_id=self.dotcodereader.read_image2(cleaned)
-                    #print(tray_id)
-                    centers=self.dotcodereader.get_centers()
-                    centers_adjusted=list()
-                    for pq in centers:
-                        centers_adjusted.append((pq[0]+centers_adjustment[1], pq[1]+centers_adjustment[0]))
-                    if str(tray_id).isalpha():
-                        #cv2.imshow("hi",i)
-                        #cv2.waitKey(0)
-                        #cv2.destroyAllWindows()
-                        errors+=1
-                        record=ErrorHandler.ErroneousImage(i, "unrecognized_dot_code", tray_id, tray_img_path.split(".")[0] +".shelf", centers_adjusted, section_types[tray_counter % 3])
-                        error_file_obj = open(str(
-                            "/Users/gghosal/Desktop/gaurav_new_photos/Errors61/" + tray_img_path.split(".")[0] + str(
-                                errors)), "wb")
-                        pickle.dump(record, error_file_obj)
-                        error_file_obj.close()
-                        
-                        
-                        
-                        
-                    #cv2.imshow('detected circles',cleaned)
-                    #cents=self.dotcodereader.get_centers()
-                    pots=self.potsegmenter.split_half_trays_with_centers(i,centers_adjusted)
-                    #centsfinal=list()
-                    #for pqrs in cents:
-                        #centsfinal.append((pqrs[0]+center[0],pqrs[1]+center[1]))
-                    #print(centsfinal)
-                    
-                    #pots=self.potsegmenter.split_half_trays(i)
-                    for q in pots:
-                        if bool((q.shape[0]>=100) and (q.shape[1]>=100)):
-                            potsfinal.append(q)
-                    pots=potsfinal
-                    #for pot in pots:
-                    
-                        #cv2.imshow("hi", pot)
-                        #cv2.waitKey(0)
-                        #cv2.destroyAllWindows()
-                    #plt.imshow('i',i)
-                    #plt.show()
-                    #cv2.imshow("hi",cleaned)
-                    #k=cv2.waitKey()
-                    #a=input("Correct Sequence?")
-        ##                if not a=="c":
-        ##                    dot_description=a.split(",")
-        ##                    description=str()
-        ##                    for dotqualifier in dot_description:
-        ##                        description+=dotqualifier
-        ##                    updated_dot_code_id=self.dotcodereader.translator.get(description, "Error!Try again")
-        ##                    print("Corrected: ", updated_dot_code_id)
-        ##                    tray_id=updated_dot_code_id
-        ##                        
-                    ###th2 = cv.adaptiveThreshold(img,255,cv.ADAPTIVE_THRESH_MEAN_C,cv.THRESH_BINARY,11,2)
-                        
-                        
-                    #print(tray_counter%3)
-                    #q=input("Dot Code")
-                    current_tray_object=DataStructures.Tray(tray_id,section_types[tray_counter%3])
-                    current_tray_object.scan_in_pots(pots)
-                    tray_struct.append(current_tray_object)
-                    #= #plt.imshow(current_tray_object.get_pot_position(3).get_image())
-                    #plt.show()
-                        
-                    
-                    #errors+=1
-                    tray_counter+=1
-                except Exception as e:
-                    errors+=1
-                    print(e)
-                    #cv2.imshow("hi",cleaned)
-                    #cv2.waitKey(0)
-                    #cv2.destroyAllWindows()
-                    #print("error")
-                    record=ErrorHandler.ErroneousImage(i, "misc.error", None, tray_img_path.split(".")[0] +".shelf", None, section_types[tray_counter % 3])
-                    error_file_obj = open(str(
-                        "/Users/gghosal/Desktop/gaurav_new_photos/Errors61/" + tray_img_path.split(".")[0] + str(
-                            errors)), "wb")
-                    pickle.dump(record, error_file_obj)
-                    error_file_obj.close()
-                    print('misc except 1')
-                    
+                errors += 1
+                tray_counter += 1
+                print("dots_not_located")
+                record = ErrorHandler.ErroneousImage(i, "dots_not_located", None,
+                                                     tray_img_path.split(".")[0] + ".shelf",
+                                                     None, section_types[tray_counter % 3])
+                all_errors.append(record)
+            except statistics.StatisticsError as e:
+                print(e)
+                errors += 1
+                tray_counter += 1
+                record = ErrorHandler.ErroneousImage(i, "statisticserror", None, tray_img_path.split(".")[0] + ".shelf",
+                                                     None, section_types[tray_counter % 3])
+                all_errors.append(record)
 
-                    
-                
-            except:
+            except Exception as e:
                 #print(e)
-                errors+=1
+                errors += 1
+                # tray_counter+=1
+                print(type(e))
                 print("outer except")
-                if DEBUG:
-                    cv2.imshow("hi",cleaned)
-                    cv2.waitKey(0)
-                    cv2.destroyAllWindows()
+                # if DEBUG:
+                cv2.imshow("hi", cleaned)
+                cv2.waitKey(0)
+                cv2.destroyAllWindows()
                 #print("error")
                 #cv2.imshow("hi",cleaned)
                 #cv2.waitKey(0)
                 #cv2.destroyAllWindows()
                 record=ErrorHandler.ErroneousImage(i, "misc.error", None, tray_img_path.split(".")[0] +".shelf", None, section_types[tray_counter % 3])
-                error_file_obj = open(str(
-                    "/Users/gghosal/Desktop/gaurav_new_photos/Errors61/" + tray_img_path.split(".")[0] + str(errors)),
-                                      "wb")
-                pickle.dump(record, error_file_obj)
-                error_file_obj.close()
-        print("error",errors)
-        return tray_struct
+                all_errors.append(record)
+                # error_file_obj = open(str(
+                #    "/Users/gghosal/Desktop/gaurav_new_photos/Errors31/" + tray_img_path.split(".")[0] + str(errors)),
+                #                      "wb")
+                # pickle.dump(record, error_file_obj)
+                #error_file_obj.close()
+        print("error", errors)
+        return tray_struct,all_errors
     def color_enhancement(self,image, factor):
         hsv=cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
         hsv[:,:,2]=2*hsv[:,:,2]
@@ -409,19 +342,32 @@ class ExecutablePipeline:
 if __name__=='__main__':
     t=time.time()
     a=ExecutablePipeline()
-    for i in list(listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/Shelf61")):
+    for i in list(listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/Shelf31")):
         print(i)
-        os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/Shelf61")
-        # print(i)
+        os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/Shelf31")
+        # print(i
         if int(i.split("_")[3]) == 1:
-            trays = a.process_tray(i, [2, 1, 2])
+            trays, errors = a.process_tray(i, [2, 1, 2])
         else:
-            trays = a.process_tray(i, [1, 2, 1])
-        out_file = open(str("/Users/gghosal/Desktop/gaurav_new_photos/ShelfFiles61/" + i.split(".")[0] + ".shelf"),
-                        "wb")
-        pickle.dump(trays, out_file)
-        out_file.close()
+            trays, errors = a.process_tray(i, [1, 2, 1])
+        if not len(errors) >= 8:
+            out_file = open(str("/Users/gghosal/Desktop/gaurav_new_photos/ShelfFiles31/" + i.split(".")[0] + ".shelf"),
+                            "wb")
+            error_file = open(str('/Users/gghosal/Desktop/gaurav_new_photos/Errors31/' + i.split(".")[0] + '.saved'),
+                              "wb")
+            pickle.dump(trays, out_file)
+            pickle.dump(errors, error_file)
+            out_file.close()
+            error_file.close()
+
+        else:
+            os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/Shelf31")
+            print(cv2.imread(i), 'imread')
+            cv2.imwrite(str('/Users/gghosal/Desktop/gaurav_new_photos/ProblemTrays/' + i.split(".")[0] + '.tiff'),
+                        cv2.imread(i))
+
+
         #print(time.time()-t)
-    # os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/Shelf3_1")
-    #trays=a.process_tray("20131108_Shelf3_0600_1_masked.tif",[2,1,2])
+    # os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/Shelf62")
+    #trays=a.process_tray("20131114_Shelf6_2000_2_masked.tif",[1,2,1])
 #20131027_Shelf3_1200_1_masked.tif

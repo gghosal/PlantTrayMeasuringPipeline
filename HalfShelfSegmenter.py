@@ -1,11 +1,10 @@
 #Half-Shelf Segmenter
-import ImageProcUtil
-import cv2
 import sys
+
+import cv2
+
 sys.path.append("/Users/gghosal/Desktop/")
 from detect_peaks import detect_peaks
-import numpy as np
-from matplotlib import pyplot as plt
 import numpy as np
 import os.path
 import os
@@ -131,7 +130,7 @@ class HalfShelfSegmenter:
         return subsets
     def split(self, imagearray):
         horizontal_split=self.split_on_horizontal(imagearray)
-        final_split=self.split_vertical2(imagearray,horizontal_split)
+        final_split = self.split_along_vertical(imagearray, horizontal_split)
         final_split=self.check_pots(final_split)
         return final_split
 if __name__=='__main__':

@@ -98,9 +98,11 @@ if __name__ == '__main__':
     ##    plt.imshow(ImageProcUtil.cvtcolor_bgr_rgb(pot))
     ##    plt.show()
     a = MeasurementSystem("hi")
+    corrections = pickle.load(open('/Users/gghosal/Desktop/gaurav_new_photos/Errors62/corrections_dict', "rb"))
+    print(corrections)
 ##    os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/ProgramFiles/")
 ##    trays_list=pickle.load(open("20131029_Shelf6_0900_1_masked.shelf","rb"))
-##    for tray in trays_list:
+##    for tray in trays_list
 ##           for pot in tray.get_all_pots():
 ##               cv2.imshow("hi",pot.get_image())
 ##               cv2.waitKey(0)
@@ -110,27 +112,36 @@ if __name__ == '__main__':
 ##    print(a.process_pot(pot))
 
 with MeasurementSaver.MeasurementSaver(
-        database_path='/Users/gghosal/Desktop/gaurav_new_photos/measurements.db') as saver:
-    # saver.create_database('/Users/gghosal/Desktop/gaurav_new_photos/measurements.db')
+        database_path='/Users/gghosal/Desktop/gaurav_new_photos/measurements4.db') as saver:
+    # saver.create_database('/Users/gghosal/Desktop/gaurav_new_photos/measurements4.db')
 
-    for i in listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/ProgramFiles/Shelf61ShelfFiles"):
+    for i in listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/ShelfFiles62"):
         # i="20131026_Shelf3_0600_1_masked.shelf"
-        os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/ProgramFiles/Shelf61ShelfFiles")
+        os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/ShelfFiles62")
         filename_no_path = os.path.split(i)[-1]
         filename_no_extension = filename_no_path.split(".")[0]
         data = a.breakdown_filename(filename_no_extension)
 
         trays_list = pickle.load(open(i, "rb"))
         # print(trays_list)
-
+        print(corrections)
         # segmenter=HalfPotSegmenter.HalfPotSegmenter()
         # pots=segmenter.split_half_trays(r)
         for tray in trays_list:
-            for pot in tray.get_all_pots():
-                # cv2.imshow("hi",pot.get_image())
-                # cv2.waitKey(0)
-                # v2.destroyAllWindows()
-                pot.store_measurement(a.process_pot2(pot.get_image()))
-                print(pot.output_identifier_csv())
-                saver.save_singular_measurement(int(data[0]), int(data[1]), pot.tray_id, pot.pot_position,
-                                                pot.measurement)
+            # print(tray.tray_id)
+            # if str(tray.tray_id).isalpha():
+            print(corrections.get(str(tray.tray_id), str(tray.tray_id)))
+            if not str(corrections.get(str(tray.tray_id), str(tray.tray_id))).isalpha():
+                tray.tray_id = corrections.get(str(tray.tray_id), str(tray.tray_id))
+
+            if not str(tray.tray_id).isalpha():
+
+                for pot in tray.get_all_pots():
+                    # cv2.imshow("hi",pot.get_image())
+                    pot.tray_id = tray.tray_id
+                    # cv2.waitKey(0)
+                    # cv2.destroyAllWindows()
+                    pot.store_measurement(a.process_pot2(pot.get_image()))
+                    print(pot.output_identifier_csv())
+                    saver.save_singular_measurement(int(data[0]), int(data[1]), pot.tray_id, pot.pot_position,
+                                                    pot.measurement)

@@ -144,10 +144,12 @@ if __name__=='__main__':
 ##    plt.imshow(img_out)
 ##    plt.show()
     for i in listdir_nohidden("/Users/gghosal/Box/r3_orthophotos"):
-        #already_processed=[os.path.split(j)[-1].split(".")[0] for j in listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/UndiagonalizedPhotos/")]
+        already_processed = [os.path.split(j)[-1].split(".")[0] for j in
+                             listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/Shelf31")]
         #already_processed2=[os.path.split(j)[-1].split(".")[0] for j in listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/NewUndiagonalizedPhotos/")]
-        if (os.path.split(i)[-1].split(".")[0].split("_")[1] == "Shelf6") and (
-                os.path.split(i)[-1].split(".")[0].split("_")[3] == "2"):
+        if (os.path.split(i)[-1].split(".")[0].split("_")[1] == "Shelf3") and (
+                os.path.split(i)[-1].split(".")[0].split("_")[3] == "1") and not (
+                os.path.split(i)[-1].split(".")[0] in already_processed):
             try:
                 print(i)
             
@@ -156,7 +158,7 @@ if __name__=='__main__':
                 imgout=a.complete_rotation(i)
                 #plt.imshow(imgout)
                 #plt.show()
-                cv2.imwrite(str("/Users/gghosal/Desktop/gaurav_new_photos/Shelf62/" + outfile[1]), imgout)
+                cv2.imwrite(str("/Users/gghosal/Desktop/gaurav_new_photos/Shelf31/" + outfile[1]), imgout)
             except Exception as e:
                 print(e)
                 pass
