@@ -6,7 +6,7 @@ from scipy import ndimage
 
 import NoiseRemoval
 
-
+"""Contains image processing and computer vision utilities for the plant processing pipeline"""
 def cvtcolor_bgr_rgb(img):
     b,g,r=cv2.split(img)
     return cv2.merge((r,g,b))

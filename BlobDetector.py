@@ -1,11 +1,14 @@
 ##SimpleBlobDetector
+"""Attempted use of Simple Blob Detector for dot detection. Should not be used"""
+import sys
+
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
-import sys
-import plantcv as pcv 
+
 sys.path.append("/Users/gghosal/Documents/GitHub/PlantTrayMeasuringPipeline/")
 import ImageProcUtil
+
 image=cv2.imread('/Users/gghosal/Desktop/gaurav/Plan/PlantCVCroppedTP1/101_1.jpg')
 p=ImageProcUtil.threshold_dots3(image)
 thresholded=cv2.threshold(cv2.cvtColor(p, cv2.COLOR_BGR2GRAY), 1, 255, cv2.THRESH_BINARY)

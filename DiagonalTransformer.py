@@ -1,5 +1,7 @@
 #TraysPre_Processing
 ##Example: 20131103_Shelf4_0600_1_masked_rotated.tif
+
+"""Contains the code which accesses the unrotated image files and rotates the to the proper orientation, taking into account the different rules."""
 import os
 import os.path
 import sys
@@ -70,54 +72,34 @@ class FilePreprocesser:
         image_template=cv2.imread("/Users/gghosal/Desktop/ProgramFilesPlantPipeline/Vertical.jpg")
         
         image_template_2=cv2.imread("/Users/gghosal/Desktop/Template.jpg")
-        #plt.imshow(image)
-        #plt.show()
+
         image_template_2=cv2.cvtColor(image_template_2, cv2.COLOR_BGR2GRAY)
         image_template=cv2.cvtColor(image_template, cv2.COLOR_BGR2GRAY)
         res = cv2.matchTemplate(img_grey,image_template,cv2.TM_CCOEFF_NORMED)
         avg_array=np.amax(res,axis=1)
-        #print(avg_array[(avg_array.shape[0]-350):(avg_array.shape[0])])
-        #index2=np.argmax(avg_array[(avg_array.shape[0]-350):(avg_array.shape[0])])+int(avg_array.shape[0]-350)+int(image_template.shape[0])
+
         index2=detect_peaks(avg_array[(avg_array.shape[0]-350):(avg_array.shape[0])],mph=0.1, mpd=20)[-1]+int(avg_array.shape[0]-350)+int(image_template.shape[0])
         
         #print(index2)
         index1=detect_peaks(avg_array[0:350], mph=0.1,mpd=20)[0]
         index1+=int(image_template.shape[0]/2)
         image=image[index1:index2]
-##        res2=cv2.matchTemplate(img_grey,image_template,cv2.TM_CCOEFF_NORMED)
-##        avg_array_2=np.amax(res2,axis=0)
-##        index_first=np.argmax(avg_array_2[0:150])-image_template_2.shape[1]
-##        
-##        index_second=np.argmax(avg_array_2[(avg_array_2.shape[0]-150):(avg_array_2.shape[0])])+int(avg_array_2.shape[0]-150)
-##        image=image[:, index_first:index_second]
-##        print(image.shape)
         return image
 ###ALONG
         
         
     def determine_dot_code_order(self, image):
-        #plt.imshow(image)
-        #plt.show()
         trays=self.shelf_segmenter.split(image)
         tray=trays[0]
-        #plt.imshow(tray)
-        #plt.show()
-##        plt.imshow(tray)
-##        plt.show()
         tray,_center=ImageProcUtil.threshold_dots3_slack(tray)
         tray=self.noise_removal.remove_noise(tray)
-        #tray=self.noise_removal.remove_noise(tray)
         tray_grey=cv2.cvtColor(tray, cv2.COLOR_BGR2GRAY)
         thresholded_tray_grey=cv2.threshold(tray_grey, 1, 255, cv2.THRESH_BINARY)[1]
-        #print(thresholded_tray_grey)
         w1, contours, w2=cv2.findContours(thresholded_tray_grey, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         big_dot=max(contours, key=cv2.contourArea)
         moments=cv2.moments(big_dot)
         ycoords=int(moments['m10']/moments['m00'])
         xcoords=int(moments['m01']/moments['m00'])
-        #print((xcoords, ycoords))
-        #plt.imshow(tray)
-        #plt.show()
         if ycoords<=int(tray.shape[1]/2):
             return True
         else:
@@ -145,10 +127,10 @@ if __name__=='__main__':
 ##    plt.show()
     for i in listdir_nohidden("/Users/gghosal/Box/r3_orthophotos"):
         already_processed = [os.path.split(j)[-1].split(".")[0] for j in
-                             listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/Shelf31")]
+                             listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/Shelf32")]
         #already_processed2=[os.path.split(j)[-1].split(".")[0] for j in listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/NewUndiagonalizedPhotos/")]
         if (os.path.split(i)[-1].split(".")[0].split("_")[1] == "Shelf3") and (
-                os.path.split(i)[-1].split(".")[0].split("_")[3] == "1") and not (
+                os.path.split(i)[-1].split(".")[0].split("_")[3] == "2") and not (
                 os.path.split(i)[-1].split(".")[0] in already_processed):
             try:
                 print(i)
@@ -156,17 +138,10 @@ if __name__=='__main__':
                 outfile=os.path.split(i)
                 os.chdir("/Users/gghosal/Box/r3_orthophotos")
                 imgout=a.complete_rotation(i)
-                #plt.imshow(imgout)
-                #plt.show()
-                cv2.imwrite(str("/Users/gghosal/Desktop/gaurav_new_photos/Shelf31/" + outfile[1]), imgout)
+                cv2.imwrite(str("/Users/gghosal/Desktop/gaurav_new_photos/Shelf32/" + outfile[1]), imgout)
             except Exception as e:
                 print(e)
                 pass
-    
-        else:pass#print("Done")
-  
 
-        
-        
-    #with_line=cv2.line(img,(0,peak), (img.shape[1], peak), (255,0,0),20)
-    #print(a.determine_dot_code_order(img))
+        else:
+            pass

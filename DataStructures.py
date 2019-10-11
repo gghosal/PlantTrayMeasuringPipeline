@@ -1,4 +1,6 @@
 ######Datastructures.py
+"""Contains data structure implementations which are made use of in the process of storing and tracking the measurements for the different plants.
+This module is imported by others and the two classes are used to manage and store the data."""
 import numpy as np
 class Pot:
     """Contains a single pot image"""

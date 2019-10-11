@@ -1,16 +1,18 @@
-import matplotlib.pyplot as plt
 import numpy as np
 from plantcv import plantcv as pcv
-import cv2
-import os
-import glob
-import scipy.stats
-import statistics
-import ImageProcUtil
 import pickle
-import NoiseRemoval
-def apply_brightness_contrast(input_img, brightness = 0, contrast = 0):
+import statistics
 
+import cv2
+import numpy as np
+from plantcv import plantcv as pcv
+
+import ImageProcUtil
+import NoiseRemoval
+
+"""Reads dot codes and returns the corresponding tray number---USE DotCodeReader.read_image2---"""
+def apply_brightness_contrast(input_img, brightness = 0, contrast = 0):
+    """Not Used Currently"""
     if brightness != 0:
         if brightness > 0:
             shadow = brightness
@@ -54,8 +56,9 @@ class DotCodeReader:
         for i in dotdescriptionlist:
             finalstr+=i[0]+str(i[1])
         return finalstr
-    def read_image(self, imagearray):
-        """Translate the picture of the dots into a tray number assignment."""
+
+    def read_image_obsolete(self, imagearray):
+        """***Do Not Use***Translate the picture of the dots into a tray number assignment."""
         ###Preprocessing & Object Finding Steps
     
         device, img1gray=pcv.rgb2gray(imagearray,0)
@@ -144,6 +147,7 @@ class DotCodeReader:
     def get_centers(self):
         return self.centers
     def read_image2(self, imageread):
+        """This is the current implementation for finding and reading the dot codes. """
         os.chdir('/Users/gghosal/Desktop/gaurav/res/')
         self.centers=list()
         for i in self.listdir_nohidden('/Users/gghosal/Desktop/gaurav/res/'):
@@ -185,43 +189,21 @@ class DotCodeReader:
             totalcontours.append(totalcontour)
             mmt=cv2.moments(totalcontour)
             ycoords=int(mmt['m10']/mmt['m00'])
-            xcoords=int(mmt['m01']/mmt['m00']) 
-            #cv2.circle(img1, (ycoords, xcoords), 3, (255, 0, 0), 3) 
-            #plt.imshow(img1)
-            #print([ycoords, xcoords])
-            #plt.show()
+            xcoords=int(mmt['m01']/mmt['m00'])
+
             self.centers.append(tuple([ycoords, xcoords]))
             centroids.append(tuple([xcoords, ycoords]))
         count11=0
-        #dot_cleaned=imageread
+
         dot_cleaned=apply_brightness_contrast(imageread, brightness=0, contrast=49)
-        #cv2.imshow("dot_cleaned", dot_cleaned)
-        #cv2.waitKey(0)
-        #cv2.destroyAllWindows()
+
         dot_cleaned_grey=cv2.cvtColor(dot_cleaned, cv2.COLOR_RGB2HSV)
         dot_cleaned_thresh=cv2.inRange(dot_cleaned_grey,np.array([0,0,150]),np.array([255,255,255]))
         dot_cleaned=cv2.bitwise_and(dot_cleaned, dot_cleaned, mask=dot_cleaned_thresh)
         dot_kernel = np.ones((7,7),np.uint8)
-        
-        #dot_cleaned = cv2.dilate(dot_cleaned, dot_kernel)
-        #cv2.imshow("hi",dot_cleaned)
-        #cv2.waitKey(0)
-        #cv2.destroyAllWindows()
+
         dotQ=self.read_dot3(dot_cleaned)
-        #print(dotQ)
-##        for clusters1 in clusters_i:
-##            for contourtocheck in clusters1:
-##                if not obj_hierarchy[contourtocheck][2] ==-1:
-##                    if not cv2.contourArea(contours[obj_hierarchy[contourtocheck][2]])>=20: 
-##                        obj_hierarchy[contourtocheck][2]=-1
-##        counter=0
-##        for foundcontour in clusters_i:
-##            hierarchycontours=[obj_hierarchy[j][2] for j in foundcontour]
-##            #print(hierarchycontours)
-##            if not all([bool(j==-1) for j in hierarchycontours]):
-##                dotQ.append(True)
-##            else:
-##                dotQ.append(False)
+
         os.chdir(out)
         colors=list()
         dot_characteristics=list()
@@ -237,28 +219,22 @@ class DotCodeReader:
                 color_averagelist=cv2.split(masked_img1hsv)[0]
                 color_averagelist=np.reshape(color_averagelist, (color_averagelist.shape[0]*color_averagelist.shape[1],))
                 color_averagelist=color_averagelist[np.flatnonzero(color_averagelist)]
-                
-                #color_avg_list=
-##                for w in range(length):
-##                    for l in range(width):
-##                        if mask[l][w]==255:
-##                            color_averagelist.append(img1hsv[l][w][0])
+
                 color_avg=statistics.mode(color_averagelist)
-                #print(color_avg)
                 resultsdict=dict()
                 for color in self.colordefinitions:
                     resultsdict[color]=abs(self.colordefinitions[color]-color_avg)
                 color=min(resultsdict, key=lambda x:resultsdict[x])
                 colors.append(color)
-        #print(colors)
+
         for pnr in range(3):
             dot_characteristics.append(tuple((colors[pnr],dotQ[pnr])))
-        ##print(dot_characteristics)
+
         try:
-            #print("Name:", self.translator.get(self.translate(dot_characteristics),self.translate(dot_characteristics)))
+
             return self.translator.get(self.translate(dot_characteristics),self.translate(dot_characteristics))
         except Exception as e:
-            #print(e)l
+
             pass
     def read_dot2(self, imageread):
         dotQ=list()
@@ -276,11 +252,7 @@ class DotCodeReader:
         return dotQ
         
     def read_dot(self, imageread):
-        #os.chdir('/Users/gghosal/Desktop/gaurav/res/')
-        #self.centers=list()
-        #for i in self.listdir_nohidden('/Users/gghosal/Desktop/gaurav/res/'):
-            #os.remove(i)
-        #color_recognition_dict={'red':0, "lightblue":98, "darkblue":120, "pink":175, "purple":140}
+
         img1=imageread
         device,img1gray=pcv.rgb2gray(img1,0)
         img1hsv=cv2.cvtColor(img1, cv2.COLOR_BGR2HSV)
@@ -307,7 +279,6 @@ class DotCodeReader:
         counter=0
         for foundcontour in clusters_i:
             hierarchycontours=[obj_hierarchy[j][2] for j in foundcontour]
-            #print(hierarchycontours)
             if not all([bool(j==-1) for j in hierarchycontours]):
                 dotQ.append(True)
             else:
@@ -319,9 +290,7 @@ if __name__=='__main__':
     a=DotCodeReader("/Users/gghosal/Desktop/dotcodestranslated.dat",{'red':0, "lightblue":98, "darkblue":120, "pink":173, "purple":160})
     b=NoiseRemoval.NoiseRemoval()
     FILE="/Users/gghosal/Documents/GitHub/PlantTrayMeasuringPipeline/Figure_1.jpg"
-    #cv2.imshow("Dotmask",ImageProcUtil.threshold_dots(pcv.readimage(FILE)[0]))
-    #cv2.waitKey(0)
-    #cv2.destroyAllWindows()
+
     print(a.read_image2(b.remove_noise(ImageProcUtil.threshold_dots(pcv.readimage(FILE)[0]))))
 
     

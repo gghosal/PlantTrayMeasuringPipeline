@@ -1,9 +1,11 @@
 #####Executable Pipeline
 
+#
 
+"""This program will segment a shelf image into individual trays and pots, and create a file with the same name as the shelf image file+".shelf"
+The ".shelf" file can then be fed to the Measurement.py program. """
 import statistics
 import sys
-import time
 
 import cv2
 
@@ -16,7 +18,6 @@ import ImageProcUtil
 import NoiseRemoval
 
 global TRAY_SECTION
-import pickle
 import os
 
 global DEBUG
@@ -104,6 +105,7 @@ class ExecutablePipeline:
                 print(e)
                 continue
 
+=
             #cleaned=apply_brightness_contrast(cleaned, brightness=0, contrast=69)
             #cleaned_grey=cv2.cvtColor(cleaned, cv2.COLOR_RGB2HSV)
             #cleaned_grey=cleaned_grey
@@ -342,18 +344,19 @@ class ExecutablePipeline:
 if __name__=='__main__':
     t=time.time()
     a=ExecutablePipeline()
-    for i in list(listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/Shelf31")):
+    for i in list(listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/Shelf32")):
         print(i)
-        os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/Shelf31")
+
+        os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/Shelf32")
         # print(i
         if int(i.split("_")[3]) == 1:
             trays, errors = a.process_tray(i, [2, 1, 2])
         else:
             trays, errors = a.process_tray(i, [1, 2, 1])
         if not len(errors) >= 8:
-            out_file = open(str("/Users/gghosal/Desktop/gaurav_new_photos/ShelfFiles31/" + i.split(".")[0] + ".shelf"),
+            out_file = open(str("/Users/gghosal/Desktop/gaurav_new_photos/ShelfFiles32/" + i.split(".")[0] + ".shelf"),
                             "wb")
-            error_file = open(str('/Users/gghosal/Desktop/gaurav_new_photos/Errors31/' + i.split(".")[0] + '.saved'),
+            error_file = open(str('/Users/gghosal/Desktop/gaurav_new_photos/Errors32/' + i.split(".")[0] + '.saved'),
                               "wb")
             pickle.dump(trays, out_file)
             pickle.dump(errors, error_file)
@@ -361,7 +364,7 @@ if __name__=='__main__':
             error_file.close()
 
         else:
-            os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/Shelf31")
+            os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/Shelf32")
             print(cv2.imread(i), 'imread')
             cv2.imwrite(str('/Users/gghosal/Desktop/gaurav_new_photos/ProblemTrays/' + i.split(".")[0] + '.tiff'),
                         cv2.imread(i))

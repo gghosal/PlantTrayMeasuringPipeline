@@ -130,7 +130,7 @@ class HalfShelfSegmenter:
         return subsets
     def split(self, imagearray):
         horizontal_split=self.split_on_horizontal(imagearray)
-        final_split = self.split_along_vertical(imagearray, horizontal_split)
+        final_split = self.split_vertical2(imagearray, horizontal_split)
         final_split=self.check_pots(final_split)
         return final_split
 if __name__=='__main__':

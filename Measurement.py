@@ -8,6 +8,7 @@ from plantcv import plantcv as pcv
 
 import MeasurementSaver
 
+"""Takes in a directory of ".shelf" files and an error-correction file and """
 
 def listdir_nohidden(path):
     for f in os.listdir(path):
@@ -91,37 +92,20 @@ class MeasurementSystem:
 
 
 if __name__ == '__main__':
-    ##    r=open("/Users/gghosal/Desktop/gaurav_new_photos/ProgramFiles/20131103_Shelf4_0600_1_masked_rotated.shelf", "rb")
-    ##    pots=pickle.load(r)
-    ##    pot=pots[1]
-    ##    pot=pot.get_all_pots()[0].get_image()
-    ##    plt.imshow(ImageProcUtil.cvtcolor_bgr_rgb(pot))
-    ##    plt.show()
-    a = MeasurementSystem("hi")
-    corrections = pickle.load(open('/Users/gghosal/Desktop/gaurav_new_photos/Errors62/corrections_dict', "rb"))
-    print(corrections)
-##    os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/ProgramFiles/")
-##    trays_list=pickle.load(open("20131029_Shelf6_0900_1_masked.shelf","rb"))
-##    for tray in trays_list
-##           for pot in tray.get_all_pots():
-##               cv2.imshow("hi",pot.get_image())
-##               cv2.waitKey(0)
-##               cv2.destroyAllWindows()
-##               pot.store_measurement(a.process_pot2(pot.get_image()))
-##               print(pot.output_identifier_csv())
-##    print(a.process_pot(pot))
 
+    a = MeasurementSystem("hi")
+    corrections = pickle.load(open('/Users/gghosal/Desktop/gaurav_new_photos/Errors31/corrections_dict', "rb"))
+    print(corrections)
 with MeasurementSaver.MeasurementSaver(
         database_path='/Users/gghosal/Desktop/gaurav_new_photos/measurements4.db') as saver:
     # saver.create_database('/Users/gghosal/Desktop/gaurav_new_photos/measurements4.db')
 
-    for i in listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/ShelfFiles62"):
+    for i in listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/ShelfFiles31"):
         # i="20131026_Shelf3_0600_1_masked.shelf"
-        os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/ShelfFiles62")
+        os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/ShelfFiles31")
         filename_no_path = os.path.split(i)[-1]
         filename_no_extension = filename_no_path.split(".")[0]
         data = a.breakdown_filename(filename_no_extension)
-
         trays_list = pickle.load(open(i, "rb"))
         # print(trays_list)
         print(corrections)
@@ -131,10 +115,14 @@ with MeasurementSaver.MeasurementSaver(
             # print(tray.tray_id)
             # if str(tray.tray_id).isalpha():
             print(corrections.get(str(tray.tray_id), str(tray.tray_id)))
-            if not str(corrections.get(str(tray.tray_id), str(tray.tray_id))).isalpha():
-                tray.tray_id = corrections.get(str(tray.tray_id), str(tray.tray_id))
+            # if not str(corrections.get(str(tray.tray_id), str(tray.tray_id))).isalpha():
+            tray.tray_id = corrections.get(str(tray.tray_id), str(tray.tray_id))
 
             if not str(tray.tray_id).isalpha():
+                try:
+                    tray.tray_id = int(tray.tray_id)
+                except:
+                    continue
 
                 for pot in tray.get_all_pots():
                     # cv2.imshow("hi",pot.get_image())
