@@ -1,4 +1,4 @@
-import cv2
+import os
 import pickle
 
 import cv2
@@ -11,9 +11,9 @@ barcode_lines = barcode.readlines()
 barcode_lines = [i.rstrip() for i in barcode_lines]
 barcode_dict = dict([(i.split(",")[1], i.split(",")[0]) for i in barcode_lines])
 print(barcode_dict)
-TRAY_ID = 56  # barcode_dict['71']#int(sys.argv[1])
+TRAY_ID = 69  # barcode_dict['71']#int(sys.argv[1])
 print(TRAY_ID)
-POT_POSITION = 2  # int(sys.argv[2
+POT_POSITION = 1  # int(sys.argv[2
 
 try:
     # shutil.rmtree("/Users/gghosal/Documents/PipelineOutput/Temp/")

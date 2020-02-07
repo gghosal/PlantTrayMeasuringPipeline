@@ -30,14 +30,21 @@ class MeasurementSystem:
         return (date, time)
 
     def threshold_green(self, image):
+        # image=cv2.convertScaleAbs(image,image, 1.25,0)
+        # cla=cv2.createCLAHE()#sharpen_kernel = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
+        # image=cv2.filter2D(image, -1,sharpen_kernel)
+        # image=cla.apply(image)
         img_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         device = 0
+
+        avg = np.mean(img_hsv[:, :, 2])
+        img_hsv[:, :, 2] = cv2.add((90 - avg), img_hsv[:, :, 2])
         # print("hi")
-        green_lower = np.array([30, 100, 20])  ##Define lower bound found by experimentation
+        green_lower = np.array([30, 100, 60])  ##Define lower bound found by experimentation
         green_upper = np.array([90, 253, 255])  ##Upper bound
         mask = cv2.inRange(img_hsv, green_lower, green_upper)
-        # device, mask=pcv.fill(mask, mask, 100, device)
         device, dilated = pcv.dilate(mask, 1, 1, device)
+        device, mask = pcv.fill(dilated, dilated, 30, device)
         # device, dilated = pcv.fill(dilated, dilated, 50, device)
         res = cv2.bitwise_and(img_hsv, img_hsv, mask=dilated)
         # plt.imshow(res)
@@ -135,27 +142,27 @@ class MeasurementSystem:
 if __name__ == '__main__':
 
     a = MeasurementSystem("hi")
-    corrections = pickle.load(open('/Users/gghosal/Desktop/gaurav_new_photos/Errors62/corrections_dict', "rb"))
+    corrections = pickle.load(open('/Users/gghosal/Desktop/gaurav_new_photos/Errors31/corrections_dict', "rb"))
     print(corrections)
     with MeasurementSaver.MeasurementSaver(
-            database_path='/Users/gghosal/Desktop/gaurav_new_photos/measurements5.db') as saver:
-        # saver.create_database('/Users/gghosal/Desktop/gaurav_new_photos/measurements5.db')
+            database_path='/Users/gghosal/Desktop/gaurav_new_photos/measurements16.db') as saver:
+        saver.create_database('/Users/gghosal/Desktop/gaurav_new_photos/measurements10.db')
 
-        for i in listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/ShelfFiles62"):
+        for i in listdir_nohidden("/Users/gghosal/Desktop/gaurav_new_photos/ShelfFiles31"):
             # i="20131026_Shelf3_0600_1_masked.shelf"
-            os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/ShelfFiles62")
+            os.chdir("/Users/gghosal/Desktop/gaurav_new_photos/ShelfFiles31")
             filename_no_path = os.path.split(i)[-1]
             filename_no_extension = filename_no_path.split(".")[0]
             data = a.breakdown_filename(filename_no_extension)
             trays_list = pickle.load(open(i, "rb"))
             # print(trays_list)
-            print(corrections)
+            #print(corrections)
             # segmenter=HalfPotSegmenter.HalfPotSegmenter()
             # pots=segmenter.split_half_trays(r)
             for tray in trays_list:
                 # print(tray.tray_id)
                 # if str(tray.tray_id).isalpha():
-                print(corrections.get(str(tray.tray_id), str(tray.tray_id)))
+                #print(corrections.get(str(tray.tray_id), str(tray.tray_id)))
                 # if not str(corrections.get(str(tray.tray_id), str(tray.tray_id))).isalpha():
                 tray.tray_id = corrections.get(str(tray.tray_id), str(tray.tray_id))
 
